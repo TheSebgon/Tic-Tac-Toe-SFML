@@ -15,6 +15,12 @@ void Game::initialize_Window()
 	this->window_ptr->setFramerateLimit(60);
 }
 
+//Music initialization
+void Game::initialize_Music()
+{
+	if (!this->music.openFromFile("sound.ogg"))
+		exit(1);
+}
 
 ////////////////////	Constructor/Destructor	////////////////////
 
@@ -22,6 +28,8 @@ Game::Game()
 {
 	this->initialize_Variable();
 	this->initialize_Window();
+	this->initialize_Music();
+	this->music.play();
 }
 
 Game::~Game()
@@ -37,6 +45,12 @@ const bool Game::get_Window_Is_Open() const
 	return this->window_ptr->isOpen();
 }
 
+//Update mouse position relative to window
+void Game::update_Mouse_Position()
+{
+	this->mouse_pos_w = sf::Mouse::getPosition(*this->window_ptr);
+}
+
 //Events handling 
 void Game::events_Pool()
 {
@@ -44,7 +58,7 @@ void Game::events_Pool()
 	{
 		switch (this->event_1.type)
 		{
-		case sf::Event::Closed:				//Pressing x on window
+		case sf::Event::Closed:			//Pressing x on window
 			this->window_ptr->close();
 			break;
 		}
@@ -55,6 +69,11 @@ void Game::events_Pool()
 void Game::update()
 {
 	this->events_Pool();
+	this->update_Mouse_Position();	//get mouse pos 
+
+	//relative to the screen
+	std::cout << "Mouse position: " << sf::Mouse::getPosition(*this->window_ptr).x << " "
+		<< sf::Mouse::getPosition(*this->window_ptr).y << std::endl;
 }
 
 
@@ -64,6 +83,8 @@ void Game::render()
 	this->window_ptr->clear();		
 
 	//Draw here
+
+
 
 	this->window_ptr->display();
 }
