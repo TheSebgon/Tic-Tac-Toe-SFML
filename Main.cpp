@@ -1,21 +1,22 @@
-#include <SFML/Graphics.hpp>
+#include "Engine.h"
+
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(1200, 800), "Test");
+	Game g1;
 
-	sf::Event event;
+	//Window loop
+	while (g1.get_Window_Is_Open())
+	{
 
-	while (window.isOpen()) {
+		//event handling
+		g1.events_Pool();
 
-		while (window.pollEvent(event)) {
+		//update
+		g1.update();
 
-			if (event.type == sf::Event::Closed) {
+		//render
+		g1.render();
 
-				window.close();
-			}
-		}
 	}
-
-	return 0;
 }
