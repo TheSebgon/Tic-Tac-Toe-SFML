@@ -4,7 +4,8 @@
 void Game::initialize_Variable()
 {
 	this->window_ptr = nullptr;
-	this->player_turn = 1;
+	srand(static_cast<unsigned int>(time(NULL)));
+	this->player_turn = rand() % (2 - 1 + 1) + (1);
 }
 
 //Rendering Window
@@ -63,6 +64,19 @@ void Game::initialize_Grid()
 
 }
 
+//UI initialization
+void Game::initialize_UI()
+{
+	this->next_move.setPosition(445.f, 605.f);
+	this->next_move.setSize(sf::Vector2f(170.f, 170.f));
+	this->next_move.setScale(0.5,0.5);
+
+	if (this->player_turn == 1)
+		this->next_move.setTexture(&texture_o);
+	else
+		this->next_move.setTexture(&texture_x);
+}
+
 ////////////////////	Constructor/Destructor	////////////////////
 
 Game::Game()
@@ -72,6 +86,7 @@ Game::Game()
 	this->initialize_Music();
 	this->music.play();
 	this->initialize_Grid();
+	initialize_UI();
 }
 
 Game::~Game()
@@ -95,6 +110,15 @@ void Game::update_Mouse_Position()
 	this->mouse_pos_view = this->window_ptr->mapPixelToCoords(this->mouse_pos_window); //Convert mouse pos(int) to (float)
 }
 
+//Update "next move" UI
+void Game::update_Player_Move()
+{
+	if (this->player_turn == 1)
+		this->next_move.setTexture(&texture_o);
+	else
+		this->next_move.setTexture(&texture_x);
+}
+
 void Game::place_Shape()
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) //if button pressed
@@ -110,13 +134,14 @@ void Game::place_Shape()
 					if (this->player_turn == 1)		//set texture of X or O
 					{
 						this->grid[i][j].setTexture(&texture_o);
-						player_turn = 0;
+						player_turn = 2;
 					}
 					else
 					{
 						this->grid[i][j].setTexture(&texture_x);
 						player_turn = 1;
 					}
+
 				}
 			}
 		}
@@ -135,6 +160,7 @@ void Game::events_Pool()
 			break;
 		case sf::Event::EventType::MouseButtonPressed:
 				this->place_Shape();	//Place shape on board click
+				this->update_Player_Move();
 				break;
 		}
 	}
@@ -167,6 +193,7 @@ void Game::render()
 			this->window_ptr->draw(grid[i][j]);
 		}
 	}
+	this->window_ptr->draw(next_move);
 
 	this->window_ptr->display();
 }

@@ -28,7 +28,12 @@ private:
 	sf::RectangleShape grid[3][3];
 	
 	//Game logic
-	bool player_turn;
+	int player_turn;
+
+
+	//UI
+	sf::RectangleShape next_move;
+
 
 
 	//Mouse positions
@@ -41,6 +46,7 @@ private:
 	void initialize_Window();
 	void initialize_Music();
 	void initialize_Grid();
+	void initialize_UI();
 
 
 public:
@@ -51,6 +57,7 @@ public:
 	void place_Shape();
 	void events_Pool();
 	void update_Mouse_Position();
+	void update_Player_Move();
 	void update();
 	void render();
 };
