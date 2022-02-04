@@ -17,6 +17,10 @@ private:
 	//Music
 	sf::Music music;
 
+	//Background
+	sf::Texture texture_background;
+	sf::Sprite background;
+
 	//Mouse position
 	sf::Vector2i mouse_pos_w;
 
@@ -24,6 +28,8 @@ private:
 	void initialize_Variable();
 	void initialize_Window();
 	void initialize_Music();
+	void initialize_Grid();
+
 
 public:
 	Game();

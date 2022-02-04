@@ -21,6 +21,17 @@ void Game::initialize_Music()
 	if (!this->music.openFromFile("sound.ogg"))
 		exit(1);
 }
+//Grid texture initialization 
+void Game::initialize_Grid()
+{
+	// Load textures
+	if (!this->texture_background.loadFromFile("1.png"))
+		exit(1);
+
+	// Create a sprite of grid
+	this->background.setTexture(texture_background);
+
+}
 
 ////////////////////	Constructor/Destructor	////////////////////
 
@@ -30,6 +41,8 @@ Game::Game()
 	this->initialize_Window();
 	this->initialize_Music();
 	this->music.play();
+	this->initialize_Grid();
+
 }
 
 Game::~Game()
@@ -68,7 +81,7 @@ void Game::events_Pool()
 //Update 
 void Game::update()
 {
-	this->events_Pool();
+	this->events_Pool();	//handle events
 	this->update_Mouse_Position();	//get mouse pos 
 
 	//relative to the screen
@@ -83,7 +96,7 @@ void Game::render()
 	this->window_ptr->clear();		
 
 	//Draw here
-
+	this->window_ptr->draw(background);
 
 
 	this->window_ptr->display();
