@@ -4,6 +4,7 @@
 void Game::initialize_Variable()
 {
 	this->window_ptr = nullptr;
+	this->player_turn = 1;
 }
 
 //Rendering Window
@@ -37,34 +38,28 @@ void Game::initialize_Grid()
 
 
 
-	float x = 0.f, y = 0.f;
+	float x = 15.f, y = 15.f;
 
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)		//Set every square position,size,color and outline
 		{
 			this->grid[i][j].setPosition(x, y);
-			this->grid[i][j].setSize(sf::Vector2f(200.f, 200.f));
+			this->grid[i][j].setSize(sf::Vector2f(170.f, 170.f));
 			this->grid[i][j].setFillColor(sf::Color(162, 162, 162, 0));
-			//this->grid[i][j].setOutlineThickness(1.f);					Debug only (position check)
-			//this->grid[i][j].setOutlineColor(sf::Color(0, 0, 0, 255));
+
+			this->grid[i][j].setOutlineThickness(1.f);					//Debug only (position check)
+			this->grid[i][j].setOutlineColor(sf::Color(0, 0, 0, 255));
+			
 			y += 200;
 		}
-		y = 0.f;		//set valuses for nex loop
+		y = 15.f;		//set valuses for nex loop
 		x += 200.f;
 	}
 
 
 	// Create a sprite of grid
 	this->background.setTexture(texture_background);
-
-
-	///  create x/o vector?
-	this->shape_o.setTexture(texture_o);
-	this->shape_x.setTexture(texture_x);
-
-	this->shape_o.setPosition(20.f, 410.f);
-	this->shape_x.setPosition(20.f, 210.f);
 
 }
 
@@ -96,7 +91,36 @@ const bool Game::get_Window_Is_Open() const
 //Update mouse position relative to window
 void Game::update_Mouse_Position()
 {
-	this->mouse_pos_w = sf::Mouse::getPosition(*this->window_ptr);
+	this->mouse_pos_window = sf::Mouse::getPosition(*this->window_ptr);
+	this->mouse_pos_view = this->window_ptr->mapPixelToCoords(this->mouse_pos_window); //Convert mouse pos(int) to (float)
+}
+
+void Game::place_Shape()
+{
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) //if button pressed
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)		//loop for grid
+			{
+				if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view))		//Check if in that grid
+				{
+					this->grid[i][j].setFillColor(sf::Color(sf::Color::White));				//Set grid as visable
+
+					if (this->player_turn == 1)		//set texture of X or O
+					{
+						this->grid[i][j].setTexture(&texture_o);
+						player_turn = 0;
+					}
+					else
+					{
+						this->grid[i][j].setTexture(&texture_x);
+						player_turn = 1;
+					}
+				}
+			}
+		}
+	}
 }
 
 //Events handling 
@@ -109,6 +133,9 @@ void Game::events_Pool()
 		case sf::Event::Closed:				//Pressing x on window
 			this->window_ptr->close();
 			break;
+		case sf::Event::EventType::MouseButtonPressed:
+				this->place_Shape();	//Place shape on board click
+				break;
 		}
 	}
 }
@@ -116,8 +143,8 @@ void Game::events_Pool()
 //Update			//game logic
 void Game::update()
 {
-	this->events_Pool();	//handle events
-	this->update_Mouse_Position();	//get mouse pos 
+	this->events_Pool();	//Handle events
+	this->update_Mouse_Position();	//Get mouse pos 
 
 	//relative to the screen
 	std::cout << "Mouse position: " << sf::Mouse::getPosition(*this->window_ptr).x << " "
@@ -132,9 +159,6 @@ void Game::render()
 
 	//Draw here
 	this->window_ptr->draw(background);
-	this->window_ptr->draw(shape_x);
-	this->window_ptr->draw(shape_o);
-
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -143,7 +167,6 @@ void Game::render()
 			this->window_ptr->draw(grid[i][j]);
 		}
 	}
-
 
 	this->window_ptr->display();
 }

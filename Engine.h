@@ -25,16 +25,15 @@ private:
 	//Shapes
 	sf::Texture texture_o;
 	sf::Texture texture_x;
-
-	std::vector<sf::Sprite> shape_b;		//fun tworz¹ca x y pobieraj¹ca pozycje myszy i ³¹cz¹ca j¹ z przestrzeni¹
-	std::vector<sf::Sprite> shape_c;
 	sf::RectangleShape grid[3][3];
+	
+	//Game logic
+	bool player_turn;
 
-	sf::Sprite shape_x;
-	sf::Sprite shape_o;
 
-	//Mouse position
-	sf::Vector2i mouse_pos_w;
+	//Mouse positions
+	sf::Vector2i mouse_pos_window;
+	sf::Vector2f mouse_pos_view;
 
 
 	//Private functions
@@ -49,6 +48,7 @@ public:
 	~Game();
 	const bool get_Window_Is_Open() const;	//Check if window is open
 
+	void place_Shape();
 	void events_Pool();
 	void update_Mouse_Position();
 	void update();

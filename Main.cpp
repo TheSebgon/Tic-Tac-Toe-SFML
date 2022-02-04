@@ -20,7 +20,3 @@ int main()
 
 	}
 }
-
-//two ways i see xD
-// first is texture of grid
-//sec is 3x3 Rectangle shape of 180x180 px
