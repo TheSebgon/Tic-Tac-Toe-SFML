@@ -4,8 +4,8 @@
 void Game::initialize_Variable()
 {
 	this->window_ptr = nullptr;
-	this->game_end = false;
-	this->game_row = false;
+	this->game_state_end = false;
+	this->game_state_draw = false;
 	this->moves = 0;
 	srand(static_cast<unsigned int>(time(NULL)));
 	this->player_turn = rand() % (2 - 1 + 1) + (1);
@@ -137,7 +137,7 @@ void Game::win_cond_check()
 			this->grid[i][0].setFillColor(sf::Color::Green);
 			this->grid[i][1].setFillColor(sf::Color::Green);
 			this->grid[i][2].setFillColor(sf::Color::Green);
-			this->game_end = true;
+			this->game_state_end = true;
 		}
 	}
 
@@ -150,7 +150,7 @@ void Game::win_cond_check()
 			this->grid[0][i].setFillColor(sf::Color::Green);
 			this->grid[1][i].setFillColor(sf::Color::Green);
 			this->grid[2][i].setFillColor(sf::Color::Green);
-			this->game_end = true;
+			this->game_state_end = true;
 		}
 	}
 
@@ -161,7 +161,7 @@ void Game::win_cond_check()
 		this->grid[0][0].setFillColor(sf::Color::Green);
 		this->grid[1][1].setFillColor(sf::Color::Green);
 		this->grid[2][2].setFillColor(sf::Color::Green);
-		this->game_end = true;
+		this->game_state_end = true;
 	}
 
 	if (this->placed_shapes[0][2] == this->placed_shapes[1][1] && this->placed_shapes[1][1] == this->placed_shapes[2][0]
@@ -170,7 +170,7 @@ void Game::win_cond_check()
 		this->grid[0][2].setFillColor(sf::Color::Green);
 		this->grid[1][1].setFillColor(sf::Color::Green);
 		this->grid[2][0].setFillColor(sf::Color::Green);
-		this->game_end = true;
+		this->game_state_end = true;
 	}
 }
 
@@ -180,7 +180,7 @@ void Game::place_Shape()
 	{
 		for (int j = 0; j < 3; j++)		
 		{
-			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_end)	//Check if grid contains click
+			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_state_end)	//Check if grid contains click
 			{
 				this->grid[i][j].setFillColor(sf::Color(sf::Color::White));		//Set grid as visable
 
@@ -198,7 +198,7 @@ void Game::place_Shape()
 					this->moves++;
 					player_turn = 1;
 				}
-				if (this->moves == 9) game_row = true;
+				if (this->moves == 9) game_state_draw = true;
 			}
 		}
 	}

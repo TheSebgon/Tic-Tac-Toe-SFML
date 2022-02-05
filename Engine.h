@@ -29,8 +29,8 @@ private:
 	sf::RectangleShape grid[3][3];
 	
 	//Game logic
-	bool game_row;
-	bool game_end;
+	bool game_state_draw;
+	bool game_state_end;
 	int moves;
 	int player_turn;
 	int placed_shapes[3][3]; //////////
