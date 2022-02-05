@@ -4,8 +4,19 @@
 void Game::initialize_Variable()
 {
 	this->window_ptr = nullptr;
+	this->game_end = false;
+	this->game_row = false;
+	this->moves = 0;
 	srand(static_cast<unsigned int>(time(NULL)));
 	this->player_turn = rand() % (2 - 1 + 1) + (1);
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)	
+		{
+			this->placed_shapes[i][j] = 0;
+		}
+	}
 }
 
 //Rendering Window
@@ -28,13 +39,13 @@ void Game::initialize_Music()
 void Game::initialize_Grid()
 {
 	// Load textures
-	if (!this->texture_background.loadFromFile("1.png"))
+	if (!this->texture_background.loadFromFile("Background.png"))
 		exit(1);
 
-	if (!this->texture_o.loadFromFile("2.png"))
+	if (!this->texture_o.loadFromFile("OShape.png"))
 		exit(1);
 
-	if (!this->texture_x.loadFromFile("3.png"))
+	if (!this->texture_x.loadFromFile("XShape.png"))
 		exit(1);
 
 
@@ -48,16 +59,11 @@ void Game::initialize_Grid()
 			this->grid[i][j].setPosition(x, y);
 			this->grid[i][j].setSize(sf::Vector2f(170.f, 170.f));
 			this->grid[i][j].setFillColor(sf::Color(162, 162, 162, 0));
-
-			this->grid[i][j].setOutlineThickness(1.f);					//Debug only (position check)
-			this->grid[i][j].setOutlineColor(sf::Color(0, 0, 0, 255));
-			
 			y += 200;
 		}
 		y = 15.f;		//set valuses for nex loop
 		x += 200.f;
 	}
-
 
 	// Create a sprite of grid
 	this->background.setTexture(texture_background);
@@ -94,7 +100,6 @@ Game::~Game()
 	delete this->window_ptr;
 }
 
-
 ////////////////////	Functions	////////////////////
 
 //Check if window is running
@@ -119,30 +124,81 @@ void Game::update_Player_Move()
 		this->next_move.setTexture(&texture_x);
 }
 
+//Check if win
+void Game::win_cond_check()	
+{
+
+	//Columns
+	for (int i = 0; i < 3; i++)
+	{
+		if (this->placed_shapes[i][0] == this->placed_shapes[i][1] && this->placed_shapes[i][1] == this->placed_shapes[i][2]
+			&& this->placed_shapes[i][0] != 0)
+		{
+			this->grid[i][0].setFillColor(sf::Color::Green);
+			this->grid[i][1].setFillColor(sf::Color::Green);
+			this->grid[i][2].setFillColor(sf::Color::Green);
+			this->game_end = true;
+		}
+	}
+
+	//Rows
+	for (int i = 0; i < 3; i++)
+	{
+		if (this->placed_shapes[0][i] == this->placed_shapes[1][i] && this->placed_shapes[1][i] == this->placed_shapes[2][i]
+			&& this->placed_shapes[0][i] != 0)
+		{
+			this->grid[0][i].setFillColor(sf::Color::Green);
+			this->grid[1][i].setFillColor(sf::Color::Green);
+			this->grid[2][i].setFillColor(sf::Color::Green);
+			this->game_end = true;
+		}
+	}
+
+	//Vertical - i thinking about some loop for both in one
+	if (this->placed_shapes[0][0] == this->placed_shapes[1][1] && this->placed_shapes[1][1] == this->placed_shapes[2][2]
+		&& this->placed_shapes[0][0] != 0)
+	{
+		this->grid[0][0].setFillColor(sf::Color::Green);
+		this->grid[1][1].setFillColor(sf::Color::Green);
+		this->grid[2][2].setFillColor(sf::Color::Green);
+		this->game_end = true;
+	}
+
+	if (this->placed_shapes[0][2] == this->placed_shapes[1][1] && this->placed_shapes[1][1] == this->placed_shapes[2][0]
+		&& this->placed_shapes[0][2] != 0)
+	{
+		this->grid[0][2].setFillColor(sf::Color::Green);
+		this->grid[1][1].setFillColor(sf::Color::Green);
+		this->grid[2][0].setFillColor(sf::Color::Green);
+		this->game_end = true;
+	}
+}
+
 void Game::place_Shape()
 {
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) //if button pressed
+	for (int i = 0; i < 3; i++)		//loop for grid
 	{
-		for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)		
 		{
-			for (int j = 0; j < 3; j++)		//loop for grid
+			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_end)	//Check if grid contains click
 			{
-				if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view))		//Check if in that grid
+				this->grid[i][j].setFillColor(sf::Color(sf::Color::White));		//Set grid as visable
+
+				if (this->player_turn == 1)		//Set texture of that grid as X or O
 				{
-					this->grid[i][j].setFillColor(sf::Color(sf::Color::White));				//Set grid as visable
-
-					if (this->player_turn == 1)		//set texture of X or O
-					{
-						this->grid[i][j].setTexture(&texture_o);
-						player_turn = 2;
-					}
-					else
-					{
-						this->grid[i][j].setTexture(&texture_x);
-						player_turn = 1;
-					}
-
+					this->grid[i][j].setTexture(&texture_o);
+					this->placed_shapes[i][j] = 1;
+					this->moves++;
+					player_turn = 2;						//swap turn
 				}
+				else
+				{
+					this->grid[i][j].setTexture(&texture_x);
+					this->placed_shapes[i][j] = 2;
+					this->moves++;
+					player_turn = 1;
+				}
+				if (this->moves == 9) game_row = true;
 			}
 		}
 	}
@@ -159,9 +215,13 @@ void Game::events_Pool()
 			this->window_ptr->close();
 			break;
 		case sf::Event::EventType::MouseButtonPressed:
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) //if button pressed
+			{
 				this->place_Shape();	//Place shape on board click
 				this->update_Player_Move();
+				this->win_cond_check();
 				break;
+			}	
 		}
 	}
 }
@@ -173,8 +233,8 @@ void Game::update()
 	this->update_Mouse_Position();	//Get mouse pos 
 
 	//relative to the screen
-	std::cout << "Mouse position: " << sf::Mouse::getPosition(*this->window_ptr).x << " "
-		<< sf::Mouse::getPosition(*this->window_ptr).y << std::endl;
+	//std::cout << "Mouse position: " << sf::Mouse::getPosition(*this->window_ptr).x << " "
+	//	<< sf::Mouse::getPosition(*this->window_ptr).y << std::endl;
 }
 
 
