@@ -3,7 +3,6 @@
 //Initialize class variables
 void Game::initialize_Variable()
 {
-	this->window_ptr = nullptr;
 	this->game_state_end = false;
 	this->game_state_draw = false;
 	this->moves = 0;
@@ -81,12 +80,17 @@ void Game::initialize_UI()
 		this->next_move.setTexture(&texture_o);
 	else
 		this->next_move.setTexture(&texture_x);
+
+	this->restart_button.setPosition(200.f, 728.f);
+	this->restart_button.setSize(sf::Vector2f(200.f, 53.f));
+	this->restart_button.setFillColor(sf::Color(200,144,144,0));
 }
 
 ////////////////////	Constructor/Destructor	////////////////////
 
 Game::Game()
 {
+	this->window_ptr = nullptr;
 	this->initialize_Variable();
 	this->initialize_Window();
 	this->initialize_Music();
@@ -98,6 +102,7 @@ Game::Game()
 Game::~Game()
 {
 	delete this->window_ptr;
+	std::cout << "DELETION";
 }
 
 ////////////////////	Functions	////////////////////
@@ -123,6 +128,14 @@ void Game::update_Player_Move()
 	else
 		this->next_move.setTexture(&texture_x);
 }
+
+void Game::restart_game()
+{
+	this->initialize_Variable();
+	this->initialize_Grid();
+	this->initialize_UI();
+}
+
 
 //Check if win
 void Game::win_cond_check()	
@@ -180,7 +193,7 @@ void Game::place_Shape()
 	{
 		for (int j = 0; j < 3; j++)		
 		{
-			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_state_end)	//Check if grid contains click
+			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_state_end)	//Click on Grid piece
 			{
 				this->grid[i][j].setFillColor(sf::Color(sf::Color::White));		//Set grid as visable
 
@@ -198,10 +211,12 @@ void Game::place_Shape()
 					this->moves++;
 					player_turn = 1;
 				}
-				if (this->moves == 9) game_state_draw = true;
+				if (this->moves == 9) game_state_draw = game_state_end = true;
 			}
 		}
 	}
+	if (this->restart_button.getGlobalBounds().contains(this->mouse_pos_view))	//Click on restart button
+		this->restart_game();
 }
 
 //Events handling 
@@ -254,6 +269,6 @@ void Game::render()
 		}
 	}
 	this->window_ptr->draw(next_move);
-
+	this->window_ptr->draw(restart_button);
 	this->window_ptr->display();
 }
