@@ -39,16 +39,23 @@ void Game::initialize_Resources()
 	if (!this->texture_x.loadFromFile("XShape.png"))		//Xshape
 		exit(1);
 
+	if (!this->texture_restart_button.loadFromFile("Restart.png"))	// Restart button texture
+		exit(1);
+
 
 	//Music initialization
-
 	if (!this->sound_placing.openFromFile("Placing.ogg"))		//Placing shape sound
+		exit(1);
+
+	if (!this->sound_victory.openFromFile("Victory.ogg"))		//Placing shape sound
 		exit(1);
 
 	if (!this->sound_restart.openFromFile("Restart.ogg"))	//Restart button sound
 		exit(1);
 
 	this->sound_restart.setVolume(50.f);
+	this->sound_placing.setVolume(75.f);
+	this->sound_victory.setVolume(75.f);
 }
 
 //Grid initialization 
@@ -86,7 +93,7 @@ void Game::initialize_UI()
 
 	this->restart_button.setPosition(200.f, 728.f);
 	this->restart_button.setSize(sf::Vector2f(200.f, 53.f));
-	this->restart_button.setFillColor(sf::Color(200,144,144,0));
+	this->restart_button.setTexture(&texture_restart_button);
 }
 
 ////////////////////	Constructor/Destructor	////////////////////
@@ -130,10 +137,37 @@ void Game::update_Player_Move()
 		this->next_move.setTexture(&texture_x);
 }
 
+//End of game view 
+void Game::end_Of_Game()
+{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				if (this->grid[i][j].getFillColor() != sf::Color::Green)
+					this->grid[i][j].setFillColor(sf::Color(255, 255, 255, 100));
+			}
+		}
+
+		this->restart_button.setFillColor(sf::Color::Green);
+		this->next_move.setFillColor(sf::Color::Transparent);
+		this->background.setColor(sf::Color(255, 255, 255, 100));
+
+		if (!this->game_state_draw)
+		{
+			this->sound_victory.stop();
+			this->sound_victory.play();
+		}
+}
+
+//Game reset
 void Game::restart_game()
 {
 	this->initialize_Variables();
 	this->initialize_Grid();
+	this->background.setColor(sf::Color::White);
+	this->next_move.setFillColor(sf::Color::White);
+	this->restart_button.setFillColor(sf::Color::White);
 }
 
 //Check if win
@@ -166,7 +200,7 @@ void Game::win_cond_check()
 		}
 	}
 
-	//Vertical - i thinking about some loop for both in one
+	//Vertical
 	if (this->placed_shapes[0][0] == this->placed_shapes[1][1] && this->placed_shapes[1][1] == this->placed_shapes[2][2]
 		&& this->placed_shapes[0][0] != 0)
 	{
@@ -184,6 +218,8 @@ void Game::win_cond_check()
 		this->grid[2][0].setFillColor(sf::Color::Green);
 		this->game_state_end = true;
 	}
+	if (this->game_state_end)
+		this->end_Of_Game();
 }
 
 void Game::place_Shape()
@@ -214,7 +250,7 @@ void Game::place_Shape()
 					this->moves++;
 					player_turn = 1;
 				}
-				if (this->moves == 9) game_state_draw = game_state_end = true;
+				if (this->moves == 9) this->game_state_draw = this->game_state_end = true;
 			}
 		}
 	}

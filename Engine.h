@@ -18,6 +18,7 @@ private:
 	//Music
 	sf::Music sound_placing;			// to do: sound of placing shapes insted background miusic
 	sf::Music sound_restart;
+	sf::Music sound_victory;
 
 	//Background
 	sf::Texture texture_background;
@@ -36,6 +37,7 @@ private:
 	int placed_shapes[3][3];
 
 	//UI
+	sf::Texture texture_restart_button;
 	sf::RectangleShape next_move;
 	sf::RectangleShape restart_button;
 
@@ -55,6 +57,7 @@ public:
 	~Game();
 	const bool get_Window_Is_Open() const;	//Check if window is open
 
+	void end_Of_Game();
 	void restart_game();
 	void win_cond_check();
 	void place_Shape();
