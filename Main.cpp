@@ -8,15 +8,13 @@ int main()
 	//Window loop
 	while (g1.get_Window_Is_Open())
 	{
-
-		//event handling
+		//Event handling
 		g1.events_Pool();
 
-		//update
+		//Update
 		g1.update();
 
-		//render
+		//Clearing old frame -> drawing objects -> displaying new frame
 		g1.render();
-
 	}
 }

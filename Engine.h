@@ -7,7 +7,6 @@
 #include <SFML/Audio.hpp>
 
 //Game engine
-
 class Game
 {
 private:
@@ -17,7 +16,8 @@ private:
 	sf::Event event_1;
 
 	//Music
-	sf::Music music;			// to do: sound of placing shapes insted background miusic
+	sf::Music sound_placing;			// to do: sound of placing shapes insted background miusic
+	sf::Music sound_restart;
 
 	//Background
 	sf::Texture texture_background;
@@ -33,7 +33,7 @@ private:
 	bool game_state_end;
 	int moves;
 	int player_turn;
-	int placed_shapes[3][3]; //////////
+	int placed_shapes[3][3];
 
 	//UI
 	sf::RectangleShape next_move;
@@ -44,9 +44,9 @@ private:
 	sf::Vector2f mouse_pos_view;
 
 	//Private functions
-	void initialize_Variable();
+	void initialize_Variables();
 	void initialize_Window();
-	void initialize_Music();
+	void initialize_Resources();
 	void initialize_Grid();
 	void initialize_UI();
 

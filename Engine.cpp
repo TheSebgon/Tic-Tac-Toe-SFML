@@ -1,7 +1,7 @@
 #include "Engine.h"
 
 //Initialize class variables
-void Game::initialize_Variable()
+void Game::initialize_Variables()
 {
 	this->game_state_end = false;
 	this->game_state_draw = false;
@@ -27,27 +27,34 @@ void Game::initialize_Window()
 	this->window_ptr->setFramerateLimit(60);
 }
 
-//Music initialization
-void Game::initialize_Music()
-{
-	if (!this->music.openFromFile("sound.ogg"))
-		exit(1);
-}
-
-//texture initialization 
-void Game::initialize_Grid()
+void Game::initialize_Resources()
 {
 	// Load textures
-	if (!this->texture_background.loadFromFile("Background.png"))
+	if (!this->texture_background.loadFromFile("Background.png"))	//Background
 		exit(1);
 
-	if (!this->texture_o.loadFromFile("OShape.png"))
+	if (!this->texture_o.loadFromFile("OShape.png"))		//O shape
 		exit(1);
 
-	if (!this->texture_x.loadFromFile("XShape.png"))
+	if (!this->texture_x.loadFromFile("XShape.png"))		//Xshape
 		exit(1);
 
 
+	//Music initialization
+
+	if (!this->sound_placing.openFromFile("Placing.ogg"))		//Placing shape sound
+		exit(1);
+
+	if (!this->sound_restart.openFromFile("Restart.ogg"))	//Restart button sound
+		exit(1);
+
+	this->sound_restart.setVolume(50.f);
+}
+
+//Grid initialization 
+void Game::initialize_Grid()
+{
+	this->background.setTexture(texture_background);
 
 	float x = 15.f, y = 15.f;
 
@@ -63,10 +70,6 @@ void Game::initialize_Grid()
 		y = 15.f;		//set valuses for nex loop
 		x += 200.f;
 	}
-
-	// Create a sprite of grid
-	this->background.setTexture(texture_background);
-
 }
 
 //UI initialization
@@ -91,18 +94,16 @@ void Game::initialize_UI()
 Game::Game()
 {
 	this->window_ptr = nullptr;
-	this->initialize_Variable();
+	this->initialize_Variables();
 	this->initialize_Window();
-	this->initialize_Music();
-	this->music.play();
+	this->initialize_Resources();
 	this->initialize_Grid();
-	initialize_UI();
+	this->initialize_UI();
 }
 
 Game::~Game()
 {
 	delete this->window_ptr;
-	std::cout << "DELETION";
 }
 
 ////////////////////	Functions	////////////////////
@@ -131,11 +132,9 @@ void Game::update_Player_Move()
 
 void Game::restart_game()
 {
-	this->initialize_Variable();
+	this->initialize_Variables();
 	this->initialize_Grid();
-	this->initialize_UI();
 }
-
 
 //Check if win
 void Game::win_cond_check()	
@@ -202,12 +201,16 @@ void Game::place_Shape()
 					this->grid[i][j].setTexture(&texture_o);
 					this->placed_shapes[i][j] = 1;
 					this->moves++;
+					this->sound_placing.stop();
+					this->sound_placing.play();
 					player_turn = 2;						//swap turn
 				}
 				else
 				{
 					this->grid[i][j].setTexture(&texture_x);
 					this->placed_shapes[i][j] = 2;
+					this->sound_placing.stop();
+					this->sound_placing.play();
 					this->moves++;
 					player_turn = 1;
 				}
@@ -216,7 +219,11 @@ void Game::place_Shape()
 		}
 	}
 	if (this->restart_button.getGlobalBounds().contains(this->mouse_pos_view))	//Click on restart button
+	{
+		this->sound_restart.stop();
+		this->sound_restart.play();
 		this->restart_game();
+	}
 }
 
 //Events handling 
@@ -241,15 +248,11 @@ void Game::events_Pool()
 	}
 }
 
-//Update			//game logic
+//Update			
 void Game::update()
 {
 	this->events_Pool();	//Handle events
 	this->update_Mouse_Position();	//Get mouse pos 
-
-	//relative to the screen
-	//std::cout << "Mouse position: " << sf::Mouse::getPosition(*this->window_ptr).x << " "
-	//	<< sf::Mouse::getPosition(*this->window_ptr).y << std::endl;
 }
 
 
