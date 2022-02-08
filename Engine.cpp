@@ -33,10 +33,10 @@ void Game::initialize_Resources()
 	if (!this->texture_background.loadFromFile("Background.png"))	//Background
 		exit(1);
 
-	if (!this->texture_o.loadFromFile("OShape.png"))		//O shape
+	if (!this->texture_o.loadFromFile("OShape.png"))				//O shape
 		exit(1);
 
-	if (!this->texture_x.loadFromFile("XShape.png"))		//Xshape
+	if (!this->texture_x.loadFromFile("XShape.png"))				//Xshape
 		exit(1);
 
 	if (!this->texture_restart_button.loadFromFile("Restart.png"))	// Restart button texture
@@ -47,10 +47,13 @@ void Game::initialize_Resources()
 	if (!this->sound_placing.openFromFile("Placing.ogg"))		//Placing shape sound
 		exit(1);
 
-	if (!this->sound_victory.openFromFile("Victory.ogg"))		//Placing shape sound
+	if (!this->sound_victory.openFromFile("Victory.ogg"))		//Victory sound
 		exit(1);
 
-	if (!this->sound_restart.openFromFile("Restart.ogg"))	//Restart button sound
+	if (!this->sound_draw.openFromFile("Draw.ogg"))				//Draw sound
+		exit(1);
+
+	if (!this->sound_restart.openFromFile("Restart.ogg"))		//Restart button sound
 		exit(1);
 
 	this->sound_restart.setVolume(50.f);
@@ -155,11 +158,14 @@ void Game::end_Of_Game()
 
 		if (!this->game_state_draw)
 			this->sound_victory.play();
+		else 
+			this->sound_draw.play();
 }
 
 //Game reset
 void Game::restart_game()
 {
+	this->sound_draw.stop();
 	this->sound_victory.stop();
 	this->initialize_Variables();
 	this->initialize_Grid();
@@ -171,6 +177,7 @@ void Game::restart_game()
 //Check if win
 void Game::win_cond_check()	
 {
+	if (this->moves == 9) this->game_state_draw = this->game_state_end = true;
 
 	//Columns
 	for (int i = 0; i < 3; i++)
@@ -182,6 +189,7 @@ void Game::win_cond_check()
 			this->grid[i][1].setFillColor(sf::Color::Green);
 			this->grid[i][2].setFillColor(sf::Color::Green);
 			this->game_state_end = true;
+			this->game_state_draw = false;
 		}
 	}
 
@@ -195,6 +203,7 @@ void Game::win_cond_check()
 			this->grid[1][i].setFillColor(sf::Color::Green);
 			this->grid[2][i].setFillColor(sf::Color::Green);
 			this->game_state_end = true;
+			this->game_state_draw = false;
 		}
 	}
 
@@ -206,6 +215,7 @@ void Game::win_cond_check()
 		this->grid[1][1].setFillColor(sf::Color::Green);
 		this->grid[2][2].setFillColor(sf::Color::Green);
 		this->game_state_end = true;
+		this->game_state_draw = false;
 	}
 
 	if (this->placed_shapes[0][2] == this->placed_shapes[1][1] && this->placed_shapes[1][1] == this->placed_shapes[2][0]
@@ -215,6 +225,7 @@ void Game::win_cond_check()
 		this->grid[1][1].setFillColor(sf::Color::Green);
 		this->grid[2][0].setFillColor(sf::Color::Green);
 		this->game_state_end = true;
+		this->game_state_draw = false;
 	}
 	if (this->game_state_end)
 		this->end_Of_Game();
@@ -226,7 +237,7 @@ void Game::place_Shape()
 	{
 		for (int j = 0; j < 3; j++)		
 		{
-			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_state_end)	//Click on Grid piece
+			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_state_end&& !this->game_state_draw) //Click on Grid piece
 			{
 				this->grid[i][j].setFillColor(sf::Color(sf::Color::White));		//Set grid as visable
 
@@ -248,10 +259,14 @@ void Game::place_Shape()
 					this->moves++;
 					player_turn = 1;
 				}
-				if (this->moves == 9) this->game_state_draw = this->game_state_end = true;
 			}
 		}
 	}
+	this->win_cond_check();
+	this->update_Player_Move();
+
+
+
 	if (this->restart_button.getGlobalBounds().contains(this->mouse_pos_view))	//Click on restart button
 	{
 		this->sound_restart.stop();
@@ -274,8 +289,6 @@ void Game::events_Pool()
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) //if button pressed
 			{
 				this->place_Shape();	//Place shape on board click
-				this->update_Player_Move();
-				this->win_cond_check();
 				break;
 			}	
 		}

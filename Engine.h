@@ -19,6 +19,7 @@ private:
 	sf::Music sound_placing;			// to do: sound of placing shapes insted background miusic
 	sf::Music sound_restart;
 	sf::Music sound_victory;
+	sf::Music sound_draw;
 
 	//Background
 	sf::Texture texture_background;
