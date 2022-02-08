@@ -154,15 +154,13 @@ void Game::end_Of_Game()
 		this->background.setColor(sf::Color(255, 255, 255, 100));
 
 		if (!this->game_state_draw)
-		{
-			this->sound_victory.stop();
 			this->sound_victory.play();
-		}
 }
 
 //Game reset
 void Game::restart_game()
 {
+	this->sound_victory.stop();
 	this->initialize_Variables();
 	this->initialize_Grid();
 	this->background.setColor(sf::Color::White);
