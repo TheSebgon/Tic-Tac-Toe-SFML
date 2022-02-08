@@ -72,6 +72,7 @@ void Game::initialize_Grid()
 	{
 		for (int j = 0; j < 3; j++)		//Set every square position,size,color and outline
 		{
+			this->grid[i][j].setTexture(NULL);
 			this->grid[i][j].setPosition(x, y);
 			this->grid[i][j].setSize(sf::Vector2f(170.f, 170.f));
 			this->grid[i][j].setFillColor(sf::Color(162, 162, 162, 0));
