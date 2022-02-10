@@ -23,7 +23,7 @@ void Game::initialize_Window()
 {
 	this->video_mode.width = 600;
 	this->video_mode.height = 800;
-	this->window_ptr = new sf::RenderWindow(this->video_mode, "SFML window");
+	this->window_ptr = new sf::RenderWindow(this->video_mode, "Tic-Tac-Toe");
 	this->window_ptr->setFramerateLimit(60);
 }
 
