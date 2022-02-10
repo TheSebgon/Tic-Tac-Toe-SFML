@@ -238,7 +238,8 @@ void Game::place_Shape()
 	{
 		for (int j = 0; j < 3; j++)		
 		{
-			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) && !this->game_state_end&& !this->game_state_draw) //Click on Grid piece
+			if (this->grid[i][j].getGlobalBounds().contains(this->mouse_pos_view) &&	//Click on Grid piece 
+				 !this->game_state_end && this->placed_shapes[i][j]==0) 
 			{
 				this->grid[i][j].setFillColor(sf::Color(sf::Color::White));		//Set grid as visable
 
@@ -260,13 +261,13 @@ void Game::place_Shape()
 					this->moves++;
 					player_turn = 1;
 				}
+				this->update_Player_Move();		//Update "next move" after placing
+
+				if (this->moves > 4)			//After 4 placed shapes begin checking win con
+					this->win_cond_check();
 			}
 		}
 	}
-	this->win_cond_check();
-	this->update_Player_Move();
-
-
 
 	if (this->restart_button.getGlobalBounds().contains(this->mouse_pos_view))	//Click on restart button
 	{
